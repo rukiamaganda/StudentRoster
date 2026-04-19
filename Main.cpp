@@ -34,7 +34,7 @@ bool isValidID(std::string id) {
 
 //  LOAD STATE 
 void loadFile() {
-    students.clear(); // 🔥 prevents duplication
+    students.clear(); // 
 
     std::ifstream file("students.txt");
     if (!file.is_open()) return;
@@ -58,7 +58,11 @@ void loadFile() {
         s.name = name;
 
         // PARSING
-        s.age = std::stoi(ageStr);
+        try {
+            s.age = std::stoi(ageStr);
+        } catch (...) {
+            continue;
+        }
 
         students.push_back(s);
     }
@@ -86,7 +90,7 @@ void createStudent() {
     std::cin.ignore();
 
     std::cout << "\n=== OLOPSC ENROLLMENT ===\n";
-    std::cout << "Enter Student ID (25A-0030): ";
+    std::cout << "Enter Student ID (Required Format: 25A-0030): ";
     getline(std::cin, s.id);
 
     if (!isValidID(s.id)) {
