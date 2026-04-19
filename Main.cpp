@@ -107,13 +107,14 @@ void createStudent() {
 
     students.push_back(s);
 
+    saveFile();
+    
     std::cout << "Enrollment successful! Welcome to OLOPSC!\n";
 }
 
 //  READ 
 void readStudents() {
-    loadFile(); 
-
+    
     if (students.empty()) {
         std::cout << "No records found.\n";
         return;
@@ -129,7 +130,6 @@ void readStudents() {
 
 //UPDATE 
 void updateStudent() {
-    loadFile();
 
     std::string id;
 
@@ -156,7 +156,6 @@ void updateStudent() {
 
 // Delete
 void deleteStudent() {
-    loadFile(); // 🔥
 
     std::string id;
 
@@ -170,6 +169,7 @@ void deleteStudent() {
             students.erase(students.begin() + i);
 
             std::cout << "Record deleted.\n";
+            saveFile();
             return;
         }
     }
@@ -179,13 +179,12 @@ void deleteStudent() {
 
 // Main
 int main() {
-
     loadFile();
 
     char choice;
 
     do {
-        std::cout << "\n===== OLOPSC STUDENT ROSTER =====\n";
+        std::cout << "\n==== STUDENT ROSTER ====\n";
         std::cout << "[1] Enroll Student\n";
         std::cout << "[2] View Students\n";
         std::cout << "[3] Update Record\n";
