@@ -188,7 +188,7 @@ void createStudent() {
         return;
     }
 
-    std::cout << "Enter Full Name Format: Surname Firstname MI (no Quotation mark strictly follow the format) ";
+    std::cout << "Enter Full Name Format: Surname Firstname MI (no Quotation mark strictly follow the format): ";
     getline(std::cin, s.name);
 
     if (!isValidNameFormat(s.name)) {
