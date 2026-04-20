@@ -171,7 +171,7 @@ void createStudent() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::cout << "\n=== OLOPSC ENROLLMENT ===\n";
-    std::cout << "Enter Student ID (Required Format: -25A-0000- (25A only and any 4 digit numbers)): ";
+    std::cout << "Enter Student ID (Required Format: 25A-0000 (25A only and any 4 digit numbers)): ";
     getline(std::cin, s.id);
 
     for (char &c : s.id) {
