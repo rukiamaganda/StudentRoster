@@ -1,5 +1,6 @@
-25A-0030,Juan Dela Cruz,18
-25B-0012,Maria Santos,19
-24C-0099,John Reyes,20
-25A-0050,Baco, Randy,21
-26A-0060,Tabio, Drenz,89
+25C-0040,Baco Randy,10
+24C-6670,San Mteo,35
+25A-5657,Dandajj Bdac,18
+25A-0050,Baco Randy M.,20
+25C-0054,Tabio Drenz C.,89
+25A-6578,Baco Arvin E.,21

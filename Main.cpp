@@ -4,6 +4,8 @@
 #include <sstream>
 #include <fstream>
 #include <cctype>
+#include <algorithm>
+#include <limits>
 
 struct Student {
     std::string id;
@@ -15,21 +17,89 @@ std::vector<Student> students;
 
 //  DATA SANITATION 
 bool isValidID(std::string id) {
-    if (id.length() != 8) return false;
 
-    std::string part1 = id.substr(0, 2);
-    std::string letter = id.substr(2, 1);
-    std::string dash = id.substr(3, 1);
-    std::string part2 = id.substr(4, 4);
+    id.erase(remove(id.begin(), id.end(), ' '), id.end());
 
-    for (char c : part1 + part2) {
-        if (!isdigit(c)) return false;
+    for (char &c : id) {
+        c = toupper(c);
     }
 
-    if (!isalpha(letter[0])) return false;
-    if (dash != "-") return false;
+    if (id.length() != 8) return false;
+
+    if (id.substr(0, 2) != "25") return false;
+    if (id[2] != 'A') return false;
+    if (id[3] != '-') return false;
+
+    for (int i = 4; i < 8; i++) {
+        if (!isdigit(id[i])) return false;
+    }
 
     return true;
+}
+
+std::string formatName(std::string name) {
+    std::stringstream ss(name);
+    std::string surname, firstname, mi;
+
+    ss >> surname >> firstname >> mi;
+
+    if (surname.empty() || firstname.empty() || mi.empty()) return name;
+
+    surname[0] = toupper(surname[0]);
+    firstname[0] = toupper(firstname[0]);
+    mi[0] = toupper(mi[0]);
+
+    for (int i = 1; i < surname.length(); i++) surname[i] = tolower(surname[i]);
+    for (int i = 1; i < firstname.length(); i++) firstname[i] = tolower(firstname[i]);
+
+    if (!mi.empty() && mi.back() != '.') {
+        mi += ".";
+    } 
+
+    return surname + " " + firstname + " " + mi;
+}
+
+bool isValidNameFormat(std::string name) {
+    std::stringstream ss(name);
+    std::string surname, firstname, mi, extra;
+
+    ss >> surname >> firstname >> mi >> extra;
+
+    // must have exactly 3 parts only
+    if (surname.empty() || firstname.empty() || mi.empty() || !extra.empty())
+        return false;
+
+    if (mi.empty()) return false;
+
+    if (mi.length() == 1) {
+        if (!isalpha(mi[0])) return false;
+    }
+    else if (mi.length() == 2) {
+        if (!isalpha(mi[0]) || mi[1] != '.') return false;
+    }
+    else {
+        return false;
+    }
+
+    return true;
+}
+
+bool isDuplicateID(std::string id) {
+
+    id.erase(remove(id.begin(), id.end(), ' '), id.end());
+    for (char &c : id) c = toupper(c);
+
+    for (int i = 0; i < students.size(); i++) {
+
+        std::string existing = students[i].id;
+
+        existing.erase(remove(existing.begin(), existing.end(), ' '), existing.end());
+        for (char &c : existing) c = toupper(c);
+
+        if (existing == id) return true;
+    }
+
+    return false;
 }
 
 //  LOAD STATE 
@@ -51,10 +121,20 @@ void loadFile() {
         getline(ss, name, ',');
         getline(ss, ageStr, ',');
 
+        ageStr.erase(remove(ageStr.begin(), ageStr.end(), '\r'), ageStr.end());
+        
         if (id.empty() || name.empty() || ageStr.empty()) continue;
 
         Student s;
         s.id = id;
+        // remove spaces
+        s.id.erase(remove(s.id.begin(), s.id.end(), ' '), s.id.end());
+
+        // force uppercase
+        for (char &c : s.id) {
+            c = toupper(c);
+        }   
+
         s.name = name;
 
         // PARSING
@@ -85,27 +165,45 @@ void saveFile() {
 
 //CREATE
 void createStudent() {
+    loadFile();
     Student s;
 
-    std::cin.ignore();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::cout << "\n=== OLOPSC ENROLLMENT ===\n";
     std::cout << "Enter Student ID (Required Format: 25A-0030): ";
     getline(std::cin, s.id);
 
-    if (!isValidID(s.id)) {
+    for (char &c : s.id) {
+    c = toupper(c);
+    }
+
+    if (!isValidID(s.id)) { 
         std::cout << "Invalid ID format!\n";
         return;
     }
 
-    std::cout << "Enter Full Name: ";
+    if (isDuplicateID(s.id)) {
+        std::cout << "ID already exists!\n";
+        return;
+    }
+
+    std::cout << "Enter Full Name (Surname Firstname MI): ";
     getline(std::cin, s.name);
 
-    std::cout << "Enter Age: ";
-    std::cin >> s.age;
+    if (!isValidNameFormat(s.name)) {
+        std::cout << "Invalid name format! Use: Surname Firstname MI\n";
+        return;
+    }
 
-    if (s.age < 0) {
-        std::cout << "Invalid age!\n";
+    s.name = formatName(s.name);
+
+    std::cout << "Enter Age: ";
+        std::cin >> s.age;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (s.age < 17 || s.age > 75) {
+        std::cout << "Invalid age! Must be 17 to 75 only.\n";
         return;
     }
 
@@ -118,6 +216,7 @@ void createStudent() {
 
 //  READ 
 void readStudents() {
+    loadFile();
     
     if (students.empty()) {
         std::cout << "No records found.\n";
@@ -137,20 +236,38 @@ void updateStudent() {
 
     std::string id;
 
-    std::cin.ignore();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Enter ID to update: ";
     getline(std::cin, id);
+
+    for (char &c : id) {
+        c = toupper(c);
+    }
 
     for (int i = 0; i < students.size(); i++) {
         if (students[i].id == id) {
 
-            std::cout << "New Name: ";
+            std::cout << "New Name (Surname Firstname MI): ";
             getline(std::cin, students[i].name);
+
+            if (!isValidNameFormat(students[i].name)) {
+                std::cout << "Invalid format!\n";
+                return;
+            }
+
+            students[i].name = formatName(students[i].name);
 
             std::cout << "New Age: ";
             std::cin >> students[i].age;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            if (students[i].age < 17 || students[i].age > 75) {
+                std::cout << "Invalid age! Must be 17 to 75 only.\n";
+                return;
+            }
 
             std::cout << "Record updated!\n";
+            saveFile();
             return;
         }
     }
@@ -163,9 +280,13 @@ void deleteStudent() {
 
     std::string id;
 
-    std::cin.ignore();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Enter ID to delete: ";
     getline(std::cin, id);
+
+    for (char &c : id) {
+        c = toupper(c);
+    }
 
     for (int i = 0; i < students.size(); i++) {
         if (students[i].id == id) {
@@ -188,7 +309,7 @@ int main() {
     char choice;
 
     do {
-        std::cout << "\n==== STUDENT ROSTER ====\n";
+        std::cout << "\n==== OLOPSC ROSTER FOR STUDENT LIST (2025) ====\n";
         std::cout << "[1] Enroll Student\n";
         std::cout << "[2] View Students\n";
         std::cout << "[3] Update Record\n";
