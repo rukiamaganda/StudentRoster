@@ -171,7 +171,7 @@ void createStudent() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::cout << "\n=== OLOPSC ENROLLMENT ===\n";
-    std::cout << "Enter Student ID (Required Format: 25A-0030): ";
+    std::cout << "Enter Student ID (Required Format: -25A-0000- (25A only and any 4 digit numbers)): ";
     getline(std::cin, s.id);
 
     for (char &c : s.id) {
@@ -188,7 +188,7 @@ void createStudent() {
         return;
     }
 
-    std::cout << "Enter Full Name (Surname Firstname MI): ";
+    std::cout << "Enter Full Name Format: Surname Firstname MI (no Quotation mark strictly follow the format) ";
     getline(std::cin, s.name);
 
     if (!isValidNameFormat(s.name)) {
@@ -198,7 +198,7 @@ void createStudent() {
 
     s.name = formatName(s.name);
 
-    std::cout << "Enter Age: ";
+    std::cout << "Enter Age (17-75 years old only): ";
         std::cin >> s.age;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -211,7 +211,7 @@ void createStudent() {
 
     saveFile();
     
-    std::cout << "Enrollment successful! Welcome to OLOPSC!\n";
+    std::cout << "Enrollment successful!\n";
 }
 
 //  READ 
@@ -247,7 +247,7 @@ void updateStudent() {
     for (int i = 0; i < students.size(); i++) {
         if (students[i].id == id) {
 
-            std::cout << "New Name (Surname Firstname MI): ";
+            std::cout << "New Name Format: Surname Firstname MI (No Quotation mark strictly follow the format): ";
             getline(std::cin, students[i].name);
 
             if (!isValidNameFormat(students[i].name)) {
@@ -257,7 +257,7 @@ void updateStudent() {
 
             students[i].name = formatName(students[i].name);
 
-            std::cout << "New Age: ";
+            std::cout << "New Age (17-75 years old): ";
             std::cin >> students[i].age;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
