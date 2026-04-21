@@ -6,6 +6,7 @@
 #include <cctype>
 #include <algorithm>
 #include <limits>
+#include <iomanip>
 
 struct Student {
     std::string id;
@@ -41,11 +42,20 @@ bool isValidID(std::string id) {
 // Validating Format for Name
 std::string formatName(std::string name) {
     std::stringstream ss(name);
-    std::string surname, firstname, mi;
+    
 
-    ss >> surname >> firstname >> mi;
+    std::vector<std::string> parts;
+    std::string word;
 
-    if (surname.empty() || firstname.empty() || mi.empty()) return name;
+    while (ss >> word) {
+        parts.push_back(word);
+    }
+
+    if (parts.size() < 3) return name;
+
+    std::string surname = parts[0];
+    std::string firstname = parts[1];
+    std::string mi = parts[2];
 
     surname[0] = toupper(surname[0]);
     firstname[0] = toupper(firstname[0]);
@@ -53,6 +63,11 @@ std::string formatName(std::string name) {
 
     for (int i = 1; i < surname.length(); i++) surname[i] = tolower(surname[i]);
     for (int i = 1; i < firstname.length(); i++) firstname[i] = tolower(firstname[i]);
+    for (int i = 1; i < mi.length(); i++) mi[i] = tolower(mi[i]);
+
+    for (int i = 3; i < parts.size(); i++) {
+        mi += " " + parts[i];
+    }
 
     if (!mi.empty() && mi.back() != '.') {
         mi += ".";
@@ -64,15 +79,17 @@ std::string formatName(std::string name) {
 // For Validating Name Format
 bool isValidNameFormat(std::string name) {
     std::stringstream ss(name);
-    std::string surname, firstname, mi, extra;
 
-    ss >> surname >> firstname >> mi >> extra;
+    std::vector<std::string> parts;
+    std::string word;
 
-    // must have exactly 3 parts only
-    if (surname.empty() || firstname.empty() || mi.empty() || !extra.empty())
-        return false;
+    while (ss >> word) {
+        parts.push_back(word);
+    }
 
-    if (mi.empty()) return false;
+    if (parts.size() < 3) return false;
+
+    std::string mi = parts[2];
 
     if (mi.length() == 1) {
         if (!isalpha(mi[0])) return false;
@@ -227,11 +244,23 @@ void readStudents() {
         return;
     }
 
-    std::cout << "\n--- OLOPSC STUDENT LIST ---\n";
+    std::cout << "\n===== OLOPSC STUDENT LIST =====\n\n";
+
+    // TABLE HEADER
+    std::cout << std::left
+              << std::setw(12) << "ID"
+              << std::setw(25) << "NAME"
+              << std::setw(5)  << "AGE" << "\n";
+
+    std::cout << "-------------------------------------------\n";
+
+    // DATA
     for (int i = 0; i < students.size(); i++) {
-        std::cout << students[i].id << " | "
-                  << students[i].name << " | "
-                  << students[i].age << "\n";
+        std::cout << std::left
+                  << std::setw(12) << students[i].id
+                  << std::setw(25) << students[i].name
+                  << std::setw(5)  << students[i].age
+                  << "\n";
     }
 }
 
