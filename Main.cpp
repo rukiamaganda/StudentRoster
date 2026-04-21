@@ -15,7 +15,8 @@ struct Student {
 
 std::vector<Student> students;
 
-//  DATA SANITATION 
+//  DATA SANITATIONS
+// For Validating ID
 bool isValidID(std::string id) {
 
     id.erase(remove(id.begin(), id.end(), ' '), id.end());
@@ -37,6 +38,7 @@ bool isValidID(std::string id) {
     return true;
 }
 
+// Validating Format for Name
 std::string formatName(std::string name) {
     std::stringstream ss(name);
     std::string surname, firstname, mi;
@@ -59,6 +61,7 @@ std::string formatName(std::string name) {
     return surname + " " + firstname + " " + mi;
 }
 
+// For Validating Name Format
 bool isValidNameFormat(std::string name) {
     std::stringstream ss(name);
     std::string surname, firstname, mi, extra;
@@ -84,6 +87,7 @@ bool isValidNameFormat(std::string name) {
     return true;
 }
 
+// Pinipigilan niya yung Duplicate
 bool isDuplicateID(std::string id) {
 
     id.erase(remove(id.begin(), id.end(), ' '), id.end());
